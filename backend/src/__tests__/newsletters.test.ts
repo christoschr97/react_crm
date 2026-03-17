@@ -3,6 +3,8 @@ import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import app from '../app';
 
+process.env.JWT_SECRET = 'test-secret';
+
 vi.mock('@prisma/client', () => {
   const newsletter = { findMany: vi.fn(), findUnique: vi.fn(), create: vi.fn(), update: vi.fn() };
   const newsletterSection = { findFirst: vi.fn() };
@@ -25,7 +27,7 @@ const db = new PrismaClient() as any;
 
 const token = `Bearer ${jwt.sign(
   { userId: 1, email: 'admin@crm.com', role: 'ADMIN' },
-  'change_me_in_production',
+  'test-secret',
   { expiresIn: '1h' }
 )}`;
 

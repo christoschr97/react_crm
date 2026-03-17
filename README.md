@@ -153,6 +153,27 @@ cd frontend
 npm test
 ```
 
+### Troubleshooting: `vitest: not found` in the frontend container
+
+This can happen if the frontend image was built before `vitest` was added to `devDependencies`, or if the container's `node_modules` volume is stale from a previous build.
+
+Docker Compose uses a named anonymous volume for `node_modules` inside each container to prevent the host folder from overwriting the container's installed packages. If that volume was created from an older image, it won't include newly added packages.
+
+Fix — run `npm install` inside the running container to refresh it:
+
+```bash
+docker-compose exec frontend npm install --legacy-peer-deps
+docker-compose exec frontend npm test
+```
+
+If the problem persists, force a full volume recreate:
+
+```bash
+docker-compose down -v
+docker-compose up --build -d
+# Then re-run migration and seed (see steps 3 and 4 above)
+```
+
 ---
 
 ## Stopping the project

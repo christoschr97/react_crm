@@ -3,6 +3,8 @@ import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import app from '../app';
 
+process.env.JWT_SECRET = 'test-secret';
+
 // Mock PrismaClient
 vi.mock('@prisma/client', () => {
   const findMany = vi.fn();
@@ -29,10 +31,9 @@ import { PrismaClient } from '@prisma/client';
 const prismaMock = new PrismaClient() as any;
 
 // Generate a valid token for tests
-const TEST_SECRET = 'change_me_in_production';
 const validToken = jwt.sign(
   { userId: 1, email: 'admin@crm.com', role: 'ADMIN' },
-  TEST_SECRET,
+  'test-secret',
   { expiresIn: '1h' }
 );
 const authHeader = `Bearer ${validToken}`;
