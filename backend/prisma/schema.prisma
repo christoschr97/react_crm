@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  passwordHash String
+  name         String
+  isActive     Boolean   @default(true)
+  role         Role      @default(EDITOR)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  posts        Post[]
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+model Category {
+  id       Int      @id @default(autoincrement())
+  name     String   @unique
+
+  posts              Post[]
+  newsletterSections NewsletterSection[]
+}
+
+model Post {
+  id         Int       @id @default(autoincrement())
+  title      String
+  content    String
+  authorId   Int
+  categoryId Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  author     User      @relation(fields: [authorId], references: [id])
+  category   Category  @relation(fields: [categoryId], references: [id])
+
+  newsletterSectionPosts NewsletterSectionPost[]
+}
+
+model Newsletter {
+  id        Int       @id @default(autoincrement())
+  title     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  sections  NewsletterSection[]
+}
+
+model NewsletterSection {
+  id           Int      @id @default(autoincrement())
+  newsletterId Int
+  categoryId   Int
+  order        Int      // 1, 2, or 3
+
+  newsletter   Newsletter @relation(fields: [newsletterId], references: [id], onDelete: Cascade)
+  category     Category   @relation(fields: [categoryId], references: [id])
+
+  posts        NewsletterSectionPost[]
+
+  @@unique([newsletterId, order])
+}
+
+model NewsletterSectionPost {
+  sectionId Int
+  postId    Int
+
+  section   NewsletterSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  post      Post              @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([sectionId, postId])
+}
+
+model Subscriber {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
