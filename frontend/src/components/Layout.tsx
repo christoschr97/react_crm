@@ -43,8 +43,16 @@ export default function Layout() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-gray-200">
-          <p className="text-xs text-gray-500 mb-2 truncate">{user?.email}</p>
+        <div className="p-4 border-t border-gray-200 space-y-3">
+          <a
+            href="/subscribe"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-xs text-indigo-600 hover:text-indigo-800 transition-colors"
+          >
+            ↗ Public subscribe page
+          </a>
+          <p className="text-xs text-gray-500 truncate">{user?.email}</p>
           <button
             onClick={handleLogout}
             className="w-full text-sm text-gray-600 hover:text-red-600 text-left transition-colors"
